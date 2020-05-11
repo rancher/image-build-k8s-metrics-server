@@ -10,10 +10,10 @@ image-push:
 
 .PHONY: scan
 image-scan:
-	trivy --severity $(SEVERITIES) --no-progress --ignore-unfixed ranchertest/k8s-metrics-server:$(TAG)
+	trivy --severity $(SEVERITIES) --no-progress --skip-update --ignore-unfixed ranchertest/k8s-metrics-server:$(TAG)
 
 .PHONY: image-manifest
 image-manifest:
 	docker image inspect ranchertest/k8s-metrics-server:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create fips-image-build-flannel:$(TAG) \
-		$(shell docker image inspect ranchertest/k8s-metrics-server:$(TAG) | jq -r \'.[] | .RepoDigests[0]\')
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create ranchertest/k8s-metrics-server:$(TAG) \
+		$(shell docker image inspect ranchertest/k8s-metrics-server:$(TAG) | jq -r '.[] | .RepoDigests[0]')
