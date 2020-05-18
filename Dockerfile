@@ -8,14 +8,19 @@ ARG TAG=""
 RUN apt update     && \ 
     apt upgrade -y && \ 
     apt install -y ca-certificates git
-RUN git clone --depth=1 https://github.com/kubernetes-sigs/metrics-server.git
-RUN cd /go/metrics-server              && \
-    git fetch --all --tags --prune     && \
-    git checkout tags/${TAG} -b ${TAG} && \
-    make all
+
+RUN git clone --depth=1 https://github.com/kubernetes-sigs/metrics-server.git $GOPATH/src/github.com/kubernetes-sigs/metrics-server
+RUN mkdir -p $GOPATH/src/github.com                                                           && \
+    cd $GOPATH/src/github.com/kubernetes-sigs/metrics-server                                  && \
+    git fetch --all --tags --prune                                                            && \
+    git checkout tags/${TAG} -b ${TAG}                                                        && \
+    cp -ar $GOPATH/src/github.com/kubernetes-sigs $GOPATH/src/github.com/kubernetes-incubator && \
+    CGO_ENABLED=1 make all
 
 FROM ubi
+ARG ARCH=amd64
 RUN microdnf update -y && \ 
     rm -rf /var/cache/yum
 
-COPY --from=builder /go/metrics-server/_output/amd64/metrics-server /usr/local/bin
+COPY --from=builder /go/src/github.com/kubernetes-sigs/metrics-server/_output/${ARCH}/metrics-server /usr/local/bin
+
