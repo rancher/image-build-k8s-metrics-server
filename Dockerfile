@@ -1,4 +1,4 @@
-ARG UBI_IMAGE=scratch
+ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
 ARG GO_IMAGE=briandowns/rancher-build-base:v0.1.1
 
 FROM ${UBI_IMAGE} as ubi
