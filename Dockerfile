@@ -1,4 +1,4 @@
-ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
+ARG UBI_IMAGE=scratch
 ARG GO_IMAGE=briandowns/rancher-build-base:v0.1.1
 
 FROM ${UBI_IMAGE} as ubi
@@ -19,8 +19,6 @@ RUN mkdir -p $GOPATH/src/github.com                                             
 
 FROM ubi
 ARG ARCH=amd64
-RUN microdnf update -y && \ 
-    rm -rf /var/cache/yum
 
 COPY --from=builder /go/src/github.com/kubernetes-sigs/metrics-server/_output/${ARCH}/metrics-server /
 
