@@ -22,5 +22,5 @@ ARG ARCH=amd64
 RUN microdnf update -y && \ 
     rm -rf /var/cache/yum
 
-COPY --from=builder /go/src/github.com/kubernetes-sigs/metrics-server/_output/${ARCH}/metrics-server /usr/local/bin
+COPY --from=builder /go/src/github.com/kubernetes-sigs/metrics-server/_output/${ARCH}/metrics-server /
 
