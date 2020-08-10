@@ -1,7 +1,7 @@
-# ranchertest/k8s-metrics-server
+# rancher/k8s-metrics-server
 
 ## Build
 
 ```sh
-TAG=v0.4.0 make
+TAG=v0.3.6 make
 ```
