@@ -1,4 +1,4 @@
-# rancher/k8s-metrics-server
+# rancher/hardened-k8s-metrics-server
 
 ## Build
 
