@@ -4,23 +4,29 @@ ifeq ($(ARCH),)
 ARCH=$(shell go env GOARCH)
 endif
 
+BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
 # the metrics server has been moved to https://github.com/kubernetes-sigs/metrics-server
 # but still refers internally to github.com/kubernetes-incubator/metrics-server packages
 PKG ?= github.com/kubernetes-incubator/metrics-server
 SRC ?= github.com/kubernetes-sigs/metrics-server
-TAG ?= v0.3.6
+TAG ?= v0.3.6$(BUILD_META)
 
 ifneq ($(DRONE_TAG),)
 TAG := $(DRONE_TAG)
 endif
 
+ifeq (,$(filter %$(BUILD_META),$(TAG)))
+$(error TAG needs to end with build metadata: $(BUILD_META))
+endif
+
 .PHONY: image-build
 image-build:
 	docker build \
+		--pull \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
-		--build-arg TAG=$(TAG) \
+		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--tag $(ORG)/hardened-k8s-metrics-server:$(TAG) \
 		--tag $(ORG)/hardened-k8s-metrics-server:$(TAG)-$(ARCH) \
 	.
