@@ -26,6 +26,7 @@ image-build:
 		--pull \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
+		--build-arg ARCH=$(ARCH) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--tag $(ORG)/hardened-k8s-metrics-server:$(TAG) \
 		--tag $(ORG)/hardened-k8s-metrics-server:$(TAG)-$(ARCH) \
