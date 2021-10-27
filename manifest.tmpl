@@ -1,12 +1,12 @@
-image: rancher/metrics-server:{{build.tag}}
+image: rancher/hardened-k8s-metrics-server:{{build.tag}}
 manifests:
   -
-    image: rancher/metrics-server:{{build.tag}}-amd64
+    image: rancher/hardened-k8s-metrics-server:{{build.tag}}-amd64
     platform:
       architecture: amd64
       os: linux
   -
-    image: rancher/metrics-server:{{build.tag}}-s390x
+    image: rancher/hardened-k8s-metrics-server:{{build.tag}}-s390x
     platform:
       architecture: s390x
       os: linux
