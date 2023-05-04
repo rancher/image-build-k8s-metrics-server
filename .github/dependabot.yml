@@ -6,8 +6,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "rancher/k3s"
+    labels:
+      - "kind/dependabot"
     reviewers:
       - "rancher/k3s"
 
@@ -16,7 +16,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "rancher/k3s"
+    labels:
+      - "kind/dependabot"
     reviewers:
       - "rancher/k3s"
