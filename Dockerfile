@@ -1,10 +1,10 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.17.13b7
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base
+ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b11
 FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
-RUN set -x \
- && apk --no-cache add \
+RUN set -x && \
+    apk --no-cache add \
     file \
     gcc \
     git \
@@ -34,7 +34,7 @@ RUN GO_LDFLAGS="-linkmode=external \
     " \
     go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/metrics-server ./cmd/metrics-server
 RUN go-assert-static.sh bin/*
-RUN if [ "${ARCH}" != "s390x" ]; then \
+RUN if [ "${ARCH}" != "s390x" || "${ARCH}" != "arm64" ]; then \
        go-assert-boring.sh bin/*; \
     fi
 RUN install -s bin/* /usr/local/bin
