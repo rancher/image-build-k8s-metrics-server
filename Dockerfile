@@ -1,6 +1,6 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-micro
+#ARG BCI_IMAGE=registry.suse.com/bci/bci-micro
 ARG GO_IMAGE=rancher/hardened-build-base:v1.20.7b3
-FROM ${BCI_IMAGE} as bci
+#FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
 RUN set -x && \
@@ -40,6 +40,6 @@ RUN if [ "${ARCH}" = "amd64" ]; then \
 RUN install -s bin/* /usr/local/bin
 RUN metrics-server --help
 
-FROM bci
+FROM scratch
 COPY --from=builder /usr/local/bin/metrics-server /
 ENTRYPOINT ["/metrics-server"]
