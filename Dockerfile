@@ -14,7 +14,7 @@ RUN set -x && \
 # setup the build
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
-ARG TAG="v0.6.4"
+ARG TAG=v0.7.0
 ARG ARCH="amd64"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
