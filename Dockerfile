@@ -14,13 +14,13 @@ RUN set -x && \
 # setup the build
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
-ARG TAG="v0.6.4"
+ARG TAG="v0.7.0"
 ARG ARCH="amd64"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
-RUN go install -mod=readonly k8s.io/kube-openapi/cmd/openapi-gen && \
+RUN go install -mod=readonly -modfile=scripts/go.mod k8s.io/kube-openapi/cmd/openapi-gen && \
     ${GOPATH}/bin/openapi-gen --logtostderr \
     -i k8s.io/metrics/pkg/apis/metrics/v1beta1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/api/resource,k8s.io/apimachinery/pkg/version \
     -p ${PKG}/pkg/generated/openapi/ \
