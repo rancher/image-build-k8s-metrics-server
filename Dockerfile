@@ -40,6 +40,6 @@ RUN if [ "${ARCH}" = "amd64" ]; then \
 RUN install -s bin/* /usr/local/bin
 RUN metrics-server --help
 
-FROM scratch
+FROM scratch as k8s-metrics-server
 COPY --from=builder /usr/local/bin/metrics-server /
 ENTRYPOINT ["/metrics-server"]
