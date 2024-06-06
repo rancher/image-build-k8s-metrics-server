@@ -16,7 +16,11 @@ ORG ?= rancher
 # but still refers internally to github.com/kubernetes-incubator/metrics-server packages
 PKG ?= github.com/kubernetes-incubator/metrics-server
 SRC ?= github.com/kubernetes-sigs/metrics-server
-TAG ?= v0.7.1$(BUILD_META)
+TAG ?= ${GITHUB_ACTION_TAG}
+
+ifeq ($(TAG),)
+TAG := v0.7.1$(BUILD_META)
+endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 $(error TAG $(TAG) needs to end with build metadata: $(BUILD_META))
@@ -48,7 +52,7 @@ image-scan:
 PHONY: log
 log:
 	@echo "ARCH=$(ARCH)"
-	@echo "TAG=$(TAG)"
+	@echo "TAG=$(TAG:$(BUILD_META)=)"
 	@echo "ORG=$(ORG)"
 	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
