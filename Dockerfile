@@ -24,7 +24,7 @@ FROM base-builder as metrics-builder
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
 ARG TAG=v0.7.1
-ARG ARCH
+ARG TARGETARCH
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
@@ -49,7 +49,7 @@ RUN xx-go --wrap && \
     go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/metrics-server ./cmd/metrics-server
 RUN go-assert-static.sh bin/*
 RUN xx-verify --static bin/*
-RUN if [ "${ARCH}" = "amd64" ]; then \
+RUN if [ "${TARGETARCH}" = "amd64" ]; then \
        go-assert-boring.sh bin/*; \
     fi
 RUN install bin/metrics-server /usr/local/bin
