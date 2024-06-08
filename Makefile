@@ -16,7 +16,7 @@ ORG ?= rancher
 # but still refers internally to github.com/kubernetes-incubator/metrics-server packages
 PKG ?= github.com/kubernetes-incubator/metrics-server
 SRC ?= github.com/kubernetes-sigs/metrics-server
-TAG ?= ${GITHUB_ACTION_TAG}
+TAG ?= v0.7.1$(BUILD_META)
 
 ifeq ($(TAG),)
 TAG := v0.7.1$(BUILD_META)
