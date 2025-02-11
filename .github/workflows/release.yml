@@ -19,27 +19,29 @@ jobs:
       uses: rancher-eio/read-vault-secrets@main
       with:
         secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
+          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
-    - name: Login to Container Registry
-      uses: docker/login-action@v3
+    - name: "Generate GH App Token"
+      id: app-token
+      uses: actions/create-github-app-token@v1
       with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ env.DOCKER_PASSWORD }}
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
+        repositories: release-metrics-server
 
     - name: Build and push image
       uses: rancher/ecm-distro-tools/actions/publish-image@master
+      env:
+        SRC: x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-metrics-server
       with:
         image: hardened-k8s-metrics-server
         tag: ${{ github.event.release.tag_name }}
 
-        public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
+        push-to-public: false
 
         prime-repo: rancher
         prime-registry: ${{ env.PRIME_REGISTRY }}
