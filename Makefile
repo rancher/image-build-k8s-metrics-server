@@ -15,7 +15,7 @@ BUILD_META=-build$(shell date +%Y%m%d)
 # the metrics server has been moved to https://github.com/kubernetes-sigs/metrics-server
 # but still refers internally to github.com/kubernetes-incubator/metrics-server packages
 PKG ?= github.com/kubernetes-incubator/metrics-server
-SRC ?= github.com/kubernetes-sigs/metrics-server
+SRC ?= github.com/rancher/release-metrics-server
 TAG ?= ${GITHUB_ACTION_TAG}
 
 ifeq ($(TAG),)
