@@ -23,7 +23,7 @@ RUN set -x && \
 FROM base-builder as metrics-builder
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
-ARG TAG=v0.8.0
+ARG TAG=v0.8.1
 ARG TARGETARCH
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
