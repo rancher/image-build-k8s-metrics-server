@@ -30,7 +30,7 @@ WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
 RUN go mod download
-RUN go install -mod=readonly -modfile=scripts/go.mod k8s.io/kube-openapi/cmd/openapi-gen && \
+RUN go install k8s.io/kube-openapi/cmd/openapi-gen@14e408962443 && \
     ${GOPATH}/bin/openapi-gen --logtostderr \
     -i k8s.io/metrics/pkg/apis/metrics/v1beta1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/api/resource,k8s.io/apimachinery/pkg/version \
     -p ${PKG}/pkg/generated/openapi/ \
