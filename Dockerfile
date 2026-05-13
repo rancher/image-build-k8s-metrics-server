@@ -2,10 +2,10 @@
 ARG GO_IMAGE=rancher/hardened-build-base:v1.26.3b1
 
 # Image that provides cross compilation tooling.
-FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.6.1 as xx
+FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.6.1 AS xx
 
-#FROM ${BCI_IMAGE} as bci
-FROM --platform=$BUILDPLATFORM ${GO_IMAGE} as base-builder
+#FROM ${BCI_IMAGE} AS bci
+FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS base-builder
 # copy xx scripts to your build stage
 COPY --from=xx / /
 RUN apk add file make git clang lld 
@@ -20,7 +20,7 @@ RUN set -x && \
     libseccomp-dev 
 
 # setup the build
-FROM base-builder as metrics-builder
+FROM base-builder AS metrics-builder
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
 ARG TAG=v0.8.1
@@ -63,12 +63,12 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
     fi
 RUN install bin/metrics-server /usr/local/bin
 
-FROM ${GO_IMAGE} as strip_binary
+FROM ${GO_IMAGE} AS strip_binary
 #strip needs to run on TARGETPLATFORM, not BUILDPLATFORM
 COPY --from=metrics-builder /usr/local/bin/metrics-server /usr/local/bin
 RUN metrics-server --help
 RUN strip /usr/local/bin/metrics-server
 
-FROM scratch as k8s-metrics-server
+FROM scratch AS k8s-metrics-server
 COPY --from=strip_binary /usr/local/bin/metrics-server /
 ENTRYPOINT ["/metrics-server"]
