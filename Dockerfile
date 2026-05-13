@@ -1,5 +1,5 @@
 #ARG BCI_IMAGE=registry.suse.com/bci/bci-micro
-ARG GO_IMAGE=rancher/hardened-build-base:v1.25.10b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.26.3b1
 
 # Image that provides cross compilation tooling.
 FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.6.1 as xx
@@ -24,19 +24,22 @@ FROM base-builder as metrics-builder
 ARG PKG="github.com/kubernetes-incubator/metrics-server"
 ARG SRC="github.com/kubernetes-sigs/metrics-server"
 ARG TAG=v0.8.1
+ARG COMMIT="c9e288072361b9b155b1137b7109601c64b05984"
 ARG TARGETARCH
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
-RUN git checkout tags/${TAG} -b ${TAG}
+RUN git fetch --depth 1 origin ${COMMIT} && git checkout ${COMMIT}
 RUN go mod download
-RUN go install k8s.io/kube-openapi/cmd/openapi-gen@14e408962443 && \
-    ${GOPATH}/bin/openapi-gen --logtostderr \
-    -i k8s.io/metrics/pkg/apis/metrics/v1beta1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/api/resource,k8s.io/apimachinery/pkg/version \
-    -p ${PKG}/pkg/generated/openapi/ \
-    -O zz_generated.openapi \
-    -h $(pwd)/scripts/boilerplate.go.txt \
-    -r /dev/null;
+RUN go get -tool k8s.io/kube-openapi/cmd/openapi-gen@v0.0.0-20260127142750-a19766b6e2d4 && \
+    go tool k8s.io/kube-openapi/cmd/openapi-gen \
+    --output-pkg ${PKG}/pkg/generated/openapi/ \
+    --output-file=zz_generated.openapi.go \
+    --output-dir=${PKG}/pkg/api/generated/openapi \
+    --go-header-file $(pwd)/scripts/boilerplate.go.txt \
+    --report-filename /dev/null \
+    k8s.io/metrics/pkg/apis/metrics/v1beta1 k8s.io/apimachinery/pkg/apis/meta/v1 k8s.io/apimachinery/pkg/api/resource k8s.io/apimachinery/pkg/version
+
 # cross-compilation setup
 ARG TARGETPLATFORM
 RUN xx-go --wrap && \
