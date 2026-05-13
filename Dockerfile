@@ -30,6 +30,12 @@ RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git fetch --depth 1 origin ${COMMIT} && git checkout ${COMMIT}
+RUN go mod edit -replace github.com/go-openapi/swag=github.com/go-openapi/swag@v0.23.0 && \
+    go mod edit -replace github.com/go-openapi/testify/v2=github.com/go-openapi/testify/v2@v2.1.0 && \
+    go mod edit -replace github.com/prometheus/prometheus=github.com/prometheus/prometheus@v0.311.3 && \
+    go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.79.3 && \
+    go mod edit -replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0 && \
+    go mod tidy && go mod vendor
 RUN go mod download
 RUN go get -tool k8s.io/kube-openapi/cmd/openapi-gen@v0.0.0-20260127142750-a19766b6e2d4 && \
     go tool k8s.io/kube-openapi/cmd/openapi-gen \
