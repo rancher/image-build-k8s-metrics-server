@@ -36,6 +36,8 @@ RUN go mod edit -replace github.com/go-openapi/swag=github.com/go-openapi/swag@v
     go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.79.3 && \
     go mod edit -replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0 && \
     go mod tidy && go mod vendor
+COPY go-mod-overrides ./go-mod-overrides
+RUN go-mod-overrides.sh ./go-mod-overrides
 RUN go mod download
 RUN go get -tool k8s.io/kube-openapi/cmd/openapi-gen@v0.0.0-20260127142750-a19766b6e2d4 && \
     go tool k8s.io/kube-openapi/cmd/openapi-gen \
