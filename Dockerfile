@@ -30,12 +30,6 @@ RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git fetch --depth 1 origin ${COMMIT} && git checkout ${COMMIT}
-RUN go mod edit -replace github.com/go-openapi/swag=github.com/go-openapi/swag@v0.23.0 && \
-    go mod edit -replace github.com/go-openapi/testify/v2=github.com/go-openapi/testify/v2@v2.1.0 && \
-    go mod edit -replace github.com/prometheus/prometheus=github.com/prometheus/prometheus@v0.311.3 && \
-    go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.79.3 && \
-    go mod edit -replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0 && \
-    go mod tidy && go mod vendor
 COPY go-mod-overrides ./go-mod-overrides
 RUN go-mod-overrides.sh ./go-mod-overrides
 RUN go mod download
