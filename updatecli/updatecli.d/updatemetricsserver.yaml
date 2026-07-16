@@ -19,17 +19,6 @@ sources:
        pattern: "*"
 
 targets:
-  dockerfile:
-    name: "Bump to latest metrics server version in Dockerfile"
-    kind: dockerfile
-    scmid: default
-    sourceid: metricsserver
-    spec:
-      file: "Dockerfile"
-      instruction:
-        keyword: "ARG"
-        matcher: "TAG"
-
   makefile:
     name: "Bump to latest metrics server version in Makefile"
     kind: file
