@@ -39,7 +39,7 @@ jobs:
           git checkout -B "$BRANCH"
           git add go-mod-overrides
           git commit -m "deps: bump pinned modules in go-mod-overrides"
-          git push --force-with-lease origin "$BRANCH"
+          git push --force-with-lease="$BRANCH:origin/$BRANCH" origin "$BRANCH"
 
           pr_number="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
 

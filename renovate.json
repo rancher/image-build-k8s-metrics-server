@@ -4,7 +4,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/(^|/)go-mod-overrides$/"],
+      "managerFilePatterns": ["(^|/)go-mod-overrides$"],
       "matchStrings": [
         "-replace (?<depName>golang\\.org/x/(?:net|crypto))=[^@\\s]+@(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)"
       ],
