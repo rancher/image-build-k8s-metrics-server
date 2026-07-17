@@ -1,0 +1,24 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)go-mod-overrides$/"],
+      "matchStrings": [
+        "-replace (?<depName>golang\\.org/x/(?:net|crypto))=[^@\\s]+@(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)"
+      ],
+      "datasourceTemplate": "go"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchFileNames": ["go-mod-overrides"],
+      "matchDepNames": ["golang.org/x/net", "golang.org/x/crypto"],
+      "labels": ["kind/dependabot"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    }
+  ]
+}
