@@ -2,8 +2,19 @@
 
 set -euo pipefail
 
+readonly VERSION_PATTERN='v[0-9]+\.[0-9]+\.[0-9]+'
 FILE="${FILE:-go-mod-overrides}"
 PROXY="${GOPROXY:-https://proxy.golang.org}"
+
+if [ "$(basename "$FILE")" != "go-mod-overrides" ]; then
+  echo "error: FILE must point to go-mod-overrides" >&2
+  exit 1
+fi
+
+if [ ! -f "$FILE" ]; then
+  echo "error: $FILE does not exist" >&2
+  exit 1
+fi
 
 changed=false
 summary="Automated version bumps in \`${FILE}\`:"$'\n'
@@ -13,7 +24,7 @@ while IFS= read -r module; do
   [ -z "$module" ] && continue
 
   escaped_module="${module//\//\\/}"
-  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@v[0-9]+\\.[0-9]+\\.[0-9]+" "$FILE" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+$' || true)"
+  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@${VERSION_PATTERN}" "$FILE" | grep -oE "${VERSION_PATTERN}\$" || true)"
   [ -z "$current" ] && { echo "skip: $module not pinned in $FILE"; continue; }
 
   latest="$(curl -fsSL "${PROXY}/${module}/@latest" | jq -r '.Version // empty' 2>/dev/null || true)"
@@ -21,7 +32,7 @@ while IFS= read -r module; do
 
   if [ "$current" != "$latest" ]; then
     echo "bump: $module $current -> $latest"
-    sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)v[0-9]+\\.[0-9]+\\.[0-9]+#\\1${latest}#" "$FILE"
+    sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)${VERSION_PATTERN}#\\1${latest}#" "$FILE"
     summary+="- \`${module}\`: ${current} → ${latest}"$'\n'
     changed=true
   else
