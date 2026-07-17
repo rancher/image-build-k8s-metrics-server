@@ -1,0 +1,59 @@
+name: Bump go-mod-overrides
+
+# NOTE:
+# - Repo setting "Allow auto-merge" must be enabled (Settings → General) for --auto to work.
+# - The default GITHUB_TOKEN cannot trigger other workflows on the PR it creates.
+#   If required status checks run via Actions, substitute a PAT or GitHub App token for
+#   GH_TOKEN (and pass it to actions/checkout via `with: { token: ... }`).
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: deps/bump-go-mod-overrides
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump pinned modules
+        id: bump
+        env:
+          MODULES: |
+            golang.org/x/net
+            golang.org/x/crypto
+        run: ./scripts/bump-go-mod-overrides.sh
+
+      - name: Create branch, commit, PR, and enable automerge
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Recreate the branch fresh from the current commit.
+          git checkout -B "$BRANCH"
+          git add go-mod-overrides
+          git commit -m "deps: bump pinned modules in go-mod-overrides"
+          git push --force-with-lease origin "$BRANCH"
+
+          # Open the PR only if one isn't already open for this branch.
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr create \
+              --head "$BRANCH" \
+              --title "deps: bump pinned modules in go-mod-overrides" \
+              --body "${{ steps.bump.outputs.summary }}" \
+              --label kind/dependabot
+          fi
+
+          # Queue automerge; completes once required checks pass.
+          gh pr merge "$BRANCH" --squash --auto
