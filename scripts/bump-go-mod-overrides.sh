@@ -6,6 +6,11 @@ readonly VERSION_PATTERN='v[0-9]+\.[0-9]+\.[0-9]+'
 FILE="${FILE:-go-mod-overrides}"
 PROXY="${GOPROXY:-https://proxy.golang.org}"
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "error: jq is required" >&2
+  exit 1
+fi
+
 if [ "$(basename "$FILE")" != "go-mod-overrides" ]; then
   echo "error: FILE must point to go-mod-overrides" >&2
   exit 1
