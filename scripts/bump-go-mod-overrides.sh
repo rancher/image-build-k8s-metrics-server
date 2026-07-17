@@ -24,7 +24,7 @@ while IFS= read -r module; do
   [ -z "$module" ] && continue
 
   escaped_module="${module//\//\\/}"
-  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@${VERSION_PATTERN}" "$FILE" | grep -oE "${VERSION_PATTERN}\$" || true)"
+  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@${VERSION_PATTERN}" "$FILE" | grep -oE "${VERSION_PATTERN}$" || true)"
   [ -z "$current" ] && { echo "skip: $module not pinned in $FILE"; continue; }
 
   latest="$(curl -fsSL "${PROXY}/${module}/@latest" | jq -r '.Version // empty' 2>/dev/null || true)"
@@ -32,7 +32,11 @@ while IFS= read -r module; do
 
   if [ "$current" != "$latest" ]; then
     echo "bump: $module $current -> $latest"
-    sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)${VERSION_PATTERN}#\\1${latest}#" "$FILE"
+    if sed --version >/dev/null 2>&1; then
+      sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)${VERSION_PATTERN}#\\1${latest}#" "$FILE"
+    else
+      sed -i '' -E "s#(^-replace ${escaped_module}=${escaped_module}@)${VERSION_PATTERN}#\\1${latest}#" "$FILE"
+    fi
     summary+="- \`${module}\`: ${current} → ${latest}"$'\n'
     changed=true
   else
