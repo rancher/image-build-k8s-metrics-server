@@ -13,15 +13,15 @@ while IFS= read -r module; do
   [ -z "$module" ] && continue
 
   escaped_module="${module//\//\\/}"
-  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@v[0-9.]+" "$FILE" | grep -oE 'v[0-9.]+$' || true)"
+  current="$(grep -oE "^-replace ${escaped_module}=${escaped_module}@v[0-9]+\\.[0-9]+\\.[0-9]+" "$FILE" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+$' || true)"
   [ -z "$current" ] && { echo "skip: $module not pinned in $FILE"; continue; }
 
-  latest="$(curl -fsSL "${PROXY}/${module}/@latest" | python -c 'import json, sys; print(json.load(sys.stdin)["Version"])' 2>/dev/null || true)"
+  latest="$(curl -fsSL "${PROXY}/${module}/@latest" | jq -r '.Version // empty' 2>/dev/null || true)"
   [ -z "$latest" ] && { echo "warn: could not resolve latest for $module"; continue; }
 
   if [ "$current" != "$latest" ]; then
     echo "bump: $module $current -> $latest"
-    sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)v[0-9.]+#\\1${latest}#" "$FILE"
+    sed -i -E "s#(^-replace ${escaped_module}=${escaped_module}@)v[0-9]+\\.[0-9]+\\.[0-9]+#\\1${latest}#" "$FILE"
     summary+="- \`${module}\`: ${current} → ${latest}"$'\n'
     changed=true
   else
