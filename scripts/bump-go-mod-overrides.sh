@@ -15,8 +15,8 @@ while IFS= read -r module; do
   [ -z "$module" ] && continue
 
   # Current pinned version, e.g. v0.55.0
-  current="$(grep -oE "^-replace ${module//\//\\/}=${module//\//\\/}@v[0-9.]+" "$FILE" \
-              | grep -oE 'v[0-9.]+$' || true)"
+  current="$(grep -oE "^-replace ${module//\//\\/}=${module//\//\\/}@v[0-9]+\.[0-9]+\.[0-9]+" "$FILE" \
+              | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+$' || true)"
   if [ -z "$current" ]; then
     echo "skip: $module not pinned in $FILE"
     continue
@@ -24,13 +24,15 @@ while IFS= read -r module; do
 
   # Latest version from the module proxy.
   # Module paths with uppercase letters need !-escaping, but golang.org/x/* is already lowercase.
-  latest="$(curl -fsSL "${PROXY}/${module}/@latest" | sed -n 's/.*"Version":"\([^"]*\)".*/\1/p')"
+  latest="$(curl -fsSL "${PROXY}/${module}/@latest" 2>/dev/null | sed -n 's/.*"Version":"\([^"]*\)".*/\1/p')"
   if [ -z "$latest" ]; then
-    echo "warn: could not resolve latest for $module"
+    echo "warn: could not resolve latest for $module (proxy unreachable or module not found)"
     continue
   fi
 
   # Use sort -V to pick the higher version and guard against downgrades.
+  # Note: sort -V does not follow semantic versioning precisely for pre-release
+  # tags (e.g. v1.2.3-rc1); golang.org/x/* only uses stable releases, so this is safe.
   higher="$(printf '%s\n%s\n' "$current" "$latest" | sort -V | tail -n1)"
   if [ "$higher" = "$current" ]; then
     echo "ok: $module already at $current (latest reported: $latest)"
@@ -38,7 +40,7 @@ while IFS= read -r module; do
   fi
 
   echo "bump: $module $current -> $latest"
-  sed -i -E "s#(^-replace ${module//\//\\/}=${module//\//\\/}@)v[0-9.]+#\1${latest}#" "$FILE"
+  sed -i -E "s#(^-replace ${module//\//\\/}=${module//\//\\/}@)v[0-9]+\.[0-9]+\.[0-9]+#\1${latest}#" "$FILE"
   summary+="- \`${module}\`: ${current} → ${latest}"$'\n'
   changed=true
 done <<< "${MODULES:-}"

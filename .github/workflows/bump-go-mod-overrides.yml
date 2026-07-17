@@ -44,10 +44,14 @@ jobs:
           git checkout -B "$BRANCH"
           git add go-mod-overrides
           git commit -m "deps: bump pinned modules in go-mod-overrides"
+          # --force-with-lease is used as a safety net even though the branch is
+          # recreated locally; it prevents clobbering concurrent commits on the remote.
           git push --force-with-lease origin "$BRANCH"
 
           # Open the PR only if one isn't already open for this branch.
-          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+          # gh pr list exits 0 with empty output when no PRs match, so || true is a no-op safety net.
+          open_pr="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number' || true)"
+          if [ -z "$open_pr" ]; then
             gh pr create \
               --head "$BRANCH" \
               --title "deps: bump pinned modules in go-mod-overrides" \
@@ -55,5 +59,5 @@ jobs:
               --label kind/dependabot
           fi
 
-          # Queue automerge; completes once required checks pass.
+          # Queue automerge on the open PR (new or pre-existing); completes once required checks pass.
           gh pr merge "$BRANCH" --squash --auto
