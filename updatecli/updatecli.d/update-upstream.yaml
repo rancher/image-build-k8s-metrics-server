@@ -1,56 +1,54 @@
 ---
-name: "Update metrics server version" 
+name: Update upstream version
 
 sources:
- metricsserver:
-   name: Get metrics-server version
-   kind: githubrelease
-   spec:
-     owner: kubernetes-sigs
-     repository: metrics-server
-     token: '{{ requiredEnv .github.token }}'
-     typefilter:
-       release: true
-       draft: false
-       prerelease: false
-     versionfilter:
-       kind: semver
-       # pattern accepts any semver constraint
-       pattern: "*"
+  tag:
+    name: Get upstream release
+    kind: githubrelease
+    spec:
+      owner: '{{ .scm.upstream.owner }}'
+      repository: '{{ .scm.upstream.repository }}'
+      token: '{{ requiredEnv .github.token }}'
+      typefilter:
+        release: true
+        draft: false
+        prerelease: false
+      versionfilter:
+        kind: semver
 
 targets:
   makefile:
-    name: "Bump to latest metrics server version in Makefile"
+    name: 'Bump Makefile to upstream version {{ source "tag" }}'
     kind: file
     scmid: default
     disablesourceinput: true
     spec:
       file: Makefile
       matchpattern: '(?m)^TAG \:\= (.*)'
-      replacepattern: 'TAG := {{ source "metricsserver" }}$$(BUILD_META)'
+      replacepattern: 'TAG := {{ source "tag" }}$$(BUILD_META)'
 
 scms:
   default:
     kind: github
     spec:
       token: '{{ requiredEnv .github.token }}'
-      username: '{{ .github.username }}'
+      username: '{{ requiredEnv .github.username }}'
       user: '{{ .github.user }}'
       email: '{{ .github.email }}'
-      owner: '{{ .github.owner }}'
-      repository: '{{ .github.repository }}'
-      branch: '{{ .github.branch }}'
-      
+      owner: '{{ .scm.default.owner }}'
+      repository: '{{ .scm.default.repository }}'
+      branch: '{{ .scm.default.branch }}'
+
 actions:
   default:
-    title: 'Bump metrics server version to {{ source "metricsserver" }}'
+    title: 'Bump to upstream version {{ source "tag" }}'
     kind: github/pullrequest
     spec:
       merge:
         strategy: manual
       mergemethod: squash
       labels:
-          - chore
-          - skip-changelog
-          - status/auto-created
+        - chore
+        - skip-changelog
+        - status/auto-created
     scmid: default
