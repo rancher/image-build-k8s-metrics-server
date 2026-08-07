@@ -3,6 +3,15 @@ github:
   email: "119870437+renovate-rancher[bot]@users.noreply.github.com"
   username: "UPDATECLI_GITHUB_ACTOR"
   token: "UPDATECLI_GITHUB_TOKEN"
-  repository: "image-build-k8s-metrics-server"
-  branch: "master"
-  owner: "rancher"
+scm:
+  default:
+    owner: rancher
+    repository: image-build-k8s-metrics-server
+    branch: master
+  upstream:
+    owner: kubernetes-sigs
+    repository: metrics-server
+    branch: master
+  buildbase:
+    owner: rancher
+    repository: image-build-base
