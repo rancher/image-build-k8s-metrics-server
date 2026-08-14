@@ -38,7 +38,7 @@ jobs:
             secret/data/github/org/${{ github.repository_owner }}/github/renovate-rancher privateKey | PRIVATE_KEY
 
       - name: Generate App Token
-        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.2.0
         id: app-token
         with:
           client-id: ${{ env.APP_ID }}
