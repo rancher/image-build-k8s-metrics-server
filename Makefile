@@ -14,7 +14,6 @@ endif
 BUILD_META=-build$(shell date +%Y%m%d)
 # the metrics server has been moved to https://github.com/kubernetes-sigs/metrics-server
 # but still refers internally to github.com/kubernetes-incubator/metrics-server packages
-PKG ?= github.com/kubernetes-incubator/metrics-server
 SRC ?= github.com/kubernetes-sigs/metrics-server
 TAG ?= ${GITHUB_ACTION_TAG}
 
@@ -30,7 +29,6 @@ REPO ?= rancher
 IMAGE = $(REPO)/hardened-k8s-metrics-server:$(TAG)
 BUILD_OPTS = \
 	--platform=$(TARGET_PLATFORMS) \
-	--build-arg PKG=$(PKG) \
 	--build-arg SRC=$(SRC) \
 	--build-arg TAG=$(TAG:$(BUILD_META)=) \
 	--target k8s-metrics-server \
@@ -67,7 +65,6 @@ log:
 	@echo "TAG=$(TAG:$(BUILD_META)=)"
 	@echo "REPO=$(REPO)"
 	@echo "IMAGE=$(IMAGE)"
-	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
 	@echo "BUILD_META=$(BUILD_META)"
 	@echo "UNAME_M=$(UNAME_M)"
