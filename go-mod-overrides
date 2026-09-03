@@ -20,6 +20,7 @@
 
 # Ported from the Dockerfile's inline `go mod edit` block; may no longer be needed.
 -replace github.com/prometheus/prometheus=github.com/prometheus/prometheus@v0.311.3
-# google.golang.org/grpc: GHSA-hrxh-6v49-42gf (xDS RBAC auth bypass, HTTP/2 Rapid Reset DoS); bump to v1.82.1.
--replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1
+# google.golang.org/grpc: GHSA-hrxh-6v49-42gf (xDS RBAC auth bypass, HTTP/2 Rapid Reset DoS),
+# CVE-2026-84304 (HIGH); bump to v1.83.1.
+-replace google.golang.org/grpc=google.golang.org/grpc@v1.83.1
 -replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0
