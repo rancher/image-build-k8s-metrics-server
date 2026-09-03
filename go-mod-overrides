@@ -8,8 +8,9 @@
 
 # golang.org/x/crypto: CVE-2026-39828/39829/39830/39831/39832/39835/42508/46595/46597 (HIGH),
 # CVE-2026-39827/39833/39834/46598 (MEDIUM) — golang.org/x/crypto/ssh & ssh/agent.
-# Drop once upstream requires golang.org/x/crypto >= v0.52.0.
--replace golang.org/x/crypto=golang.org/x/crypto@v0.52.0
+# CVE-2026-56854 (CRITICAL, ssh source-address auth bypass), CVE-2026-56855/78662 (ssh channel DoS).
+# Drop once upstream requires golang.org/x/crypto >= v0.56.0.
+-replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
 
 # Build-correctness pin (NOT a CVE): required for `go mod tidy` to resolve. Newer
 # go-openapi/swag adds a swag/loading test chain that pulls go-openapi/testify/v2
