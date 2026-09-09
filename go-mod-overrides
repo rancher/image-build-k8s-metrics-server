@@ -22,3 +22,7 @@
 # Drop once upstream requires google.golang.org/grpc >= v1.83.2.
 -replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
 -replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0
+
+# github.com/google/cel-go: GHSA-gcjh-h69q-9w9g (JSON private fields exposed via NativeTypes/ParseStructTag).
+# Drop once upstream requires github.com/google/cel-go >= v0.29.0.
+-replace github.com/google/cel-go=github.com/google/cel-go@v0.29.0
