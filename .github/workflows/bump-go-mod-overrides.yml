@@ -1,0 +1,55 @@
+name: Bump go-mod-overrides
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: deps/bump-go-mod-overrides
+      GH_TOKEN: ${{ secrets.DEPS_BOT_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.DEPS_BOT_TOKEN || github.token }}
+
+      - name: Bump pinned modules
+        id: bump
+        env:
+          MODULES: |
+            golang.org/x/net
+            golang.org/x/crypto
+        run: ./scripts/bump-go-mod-overrides.sh
+
+      - name: Create branch, commit, PR, and enable automerge
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "$BRANCH"
+          git add go-mod-overrides
+          git commit -m "deps: bump pinned modules in go-mod-overrides"
+          git push --force-with-lease origin "$BRANCH"
+
+          pr_number="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+
+          if [ -z "$pr_number" ]; then
+            gh pr create \
+              --head "$BRANCH" \
+              --title "deps: bump pinned modules in go-mod-overrides" \
+              --body "${{ steps.bump.outputs.summary }}" \
+              --label kind/dependabot
+            pr_number="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          fi
+
+          gh pr merge "$pr_number" --squash --auto
