@@ -17,15 +17,15 @@ sources:
         kind: semver
 
 targets:
-  makefile:
-    name: 'Bump Makefile to upstream version {{ source "tag" }}'
+  tagfile:
+    name: "Bump to latest metrics-server version in TAG"
     kind: file
     scmid: default
     disablesourceinput: true
     spec:
-      file: Makefile
-      matchpattern: '(?m)^TAG \:\= (.*)'
-      replacepattern: 'TAG := {{ source "tag" }}$$(BUILD_META)'
+      file: TAG
+      matchpattern: '(?m)^(.+)$'
+      replacepattern: '{{ source "tag" }}'
 
 scms:
   default:

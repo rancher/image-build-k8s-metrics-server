@@ -2,4 +2,4 @@
 * @rancher/k3s
 # Exceptions with no Ownership (automerge allowed)
 Dockerfile
-Makefile
+TAG
