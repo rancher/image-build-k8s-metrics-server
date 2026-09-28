@@ -19,26 +19,16 @@ RUN set -x && \
 
 # setup the build
 FROM base-builder AS metrics-builder
-ARG PKG="github.com/kubernetes-incubator/metrics-server"
-ARG SRC="github.com/kubernetes-sigs/metrics-server"
+ARG PKG="github.com/kubernetes-sigs/metrics-server"
 ARG TAG
-ARG COMMIT="c9e288072361b9b155b1137b7109601c64b05984"
 ARG TARGETARCH
-RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
+RUN git clone --depth=1 https://${PKG}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
-RUN git fetch --depth 1 origin ${COMMIT} && git checkout ${COMMIT}
+RUN git checkout tags/${TAG} -b ${TAG}
 COPY go-mod-overrides ./go-mod-overrides
 RUN go-mod-overrides.sh ./go-mod-overrides
 RUN go mod download
-RUN go get -tool k8s.io/kube-openapi/cmd/openapi-gen@v0.0.0-20260127142750-a19766b6e2d4 && \
-    go tool k8s.io/kube-openapi/cmd/openapi-gen \
-    --output-pkg ${PKG}/pkg/generated/openapi/ \
-    --output-file=zz_generated.openapi.go \
-    --output-dir=${PKG}/pkg/api/generated/openapi \
-    --go-header-file $(pwd)/scripts/boilerplate.go.txt \
-    --report-filename /dev/null \
-    k8s.io/metrics/pkg/apis/metrics/v1beta1 k8s.io/apimachinery/pkg/apis/meta/v1 k8s.io/apimachinery/pkg/api/resource k8s.io/apimachinery/pkg/version
 
 # cross-compilation setup
 ARG TARGETPLATFORM
