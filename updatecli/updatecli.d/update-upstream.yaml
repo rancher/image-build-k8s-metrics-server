@@ -45,7 +45,7 @@ actions:
     kind: github/pullrequest
     spec:
       merge:
-        strategy: manual
+        strategy: auto
       mergemethod: squash
       labels:
         - chore
