@@ -1,16 +1,35 @@
-# golang.org/x/text: CVE-2026-56852 (infinite loop on invalid input).
-# Drop once upstream requires golang.org/x/text >= v0.39.0.
--replace golang.org/x/text=golang.org/x/text@v0.39.0
+# golang.org/x/net: CVE-2026-78659, CVE-2026-78660, CVE-2026-78663, CVE-2026-78669, CVE-2026-97032 (x/net/http2 DoS/crash).
+# Drop once upstream requires golang.org/x/net >= v0.60.0.
+-replace golang.org/x/net=golang.org/x/net@v0.60.0
+
+# golang.org/x/text: CVE-2026-56852 (infinite loop on invalid input), CVE-2026-56851 (x/text/secure/precis panic).
+# v0.42.0 matches what golang.org/x/net v0.60.0 requires.
+# Drop once upstream requires golang.org/x/text >= v0.42.0.
+-replace golang.org/x/text=golang.org/x/text@v0.42.0
 
 # golang.org/x/crypto: CVE-2026-56855, CVE-2026-78662 (ssh channel DoS) — golang.org/x/crypto/ssh.
-# Drop once upstream requires golang.org/x/crypto >= v0.56.0.
--replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
+# v0.57.0 matches what golang.org/x/net v0.60.0 requires.
+# Drop once upstream requires golang.org/x/crypto >= v0.57.0.
+-replace golang.org/x/crypto=golang.org/x/crypto@v0.57.0
 
 # google.golang.org/grpc: CVE-2026-84304, CVE-2026-84445 (HIGH), CVE-2026-84303 (MEDIUM); bump to v1.83.2.
 # Drop once upstream requires google.golang.org/grpc >= v1.83.2.
 -replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
--replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.43.0
+
+# go.opentelemetry.io/otel: CVE-2026-81870 (otlptrace exporter config logging may leak endpoint URLs).
+# Keep sdk and exporters in lockstep.
+# Drop once upstream requires go.opentelemetry.io/otel/exporters/otlp/otlptrace >= v1.45.0.
+-replace go.opentelemetry.io/otel/sdk=go.opentelemetry.io/otel/sdk@v1.45.0
+-replace go.opentelemetry.io/otel/exporters/otlp/otlptrace=go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.45.0
+-replace go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc=go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.45.0
+
+# go.etcd.io/etcd: CVE-2026-73500 (unbounded TLS handshake goroutines in client/pkg/v3).
+# Keep api and client modules in lockstep.
+# Drop once upstream requires go.etcd.io/etcd/client/pkg/v3 >= v3.6.14.
+-replace go.etcd.io/etcd/api/v3=go.etcd.io/etcd/api/v3@v3.6.14
+-replace go.etcd.io/etcd/client/pkg/v3=go.etcd.io/etcd/client/pkg/v3@v3.6.14
+-replace go.etcd.io/etcd/client/v3=go.etcd.io/etcd/client/v3@v3.6.14
 
 # github.com/google/cel-go: GHSA-gcjh-h69q-9w9g (JSON private fields exposed via NativeTypes/ParseStructTag).
-# Drop once upstream requires github.com/google/cel-go >= v0.29.0.
--replace github.com/google/cel-go=github.com/google/cel-go@v0.29.0
+# Drop once upstream requires github.com/google/cel-go >= v0.30.0.
+-replace github.com/google/cel-go=github.com/google/cel-go@v0.30.0
